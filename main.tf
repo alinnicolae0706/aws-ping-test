@@ -29,7 +29,6 @@ resource "aws_instance" "my_vm" {
   }
 }
 
-Explain this part:
 resource "null_resource" "ping_test" {
   count = var.num_vms
   provisioner "local-exec" {
