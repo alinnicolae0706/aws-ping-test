@@ -37,10 +37,21 @@ resource "aws_instance" "my_vm" {
   }
 }
 
-resource "null_resource" "ping_test" {
+resource "null_resource" "ping_tests" {
   count = var.num_vms
+
+  # Use the triggers block to create dependencies between null_resources
+  triggers = {
+    instance_ids = join(",", aws_instance.my_vm[*].id)
+  }
+
   provisioner "local-exec" {
-    command = "ping -c 1 ${element(aws_instance.my_vm.*.private_ip, count.index)}"
+    command = <<EOT
+      #!/bin/bash
+      dest_instance_index=\$(((${count.index} + 1) % ${var.num_vms}))
+      dest_instance_ip=\$(terraform output -json instance_private_ips | jq -r ".[${dest_instance_index}]")
+      ping -c 1 \$dest_instance_ip
+    EOT
   }
 }
 

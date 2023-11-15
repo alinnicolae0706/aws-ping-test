@@ -1,3 +1,3 @@
-output "ping_results" {
-  value = null_resource.ping_test[*].exit_code
+output "instance_private_ips" {
+  value = aws_instance.my_vm[*].private_ip
 }
