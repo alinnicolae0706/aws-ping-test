@@ -37,18 +37,18 @@ resource "aws_instance" "my_vm" {
   }
 }
 
-resource "null_resource" "ping_tests" {
-  count = var.num_vms
+# resource "null_resource" "ping_tests" {
+#   count = var.num_vms
 
-  provisioner "local-exec" {
-    command = <<EOT
-      #!/bin/bash
-      dest_instance_index=$(((${count.index} + 1) % ${var.num_vms}))
-      dest_instance_ip=$("${aws_instance.my_vm[dest_instance_index].private_ip}")
-      ping -c 1 $dest_instance_ip
-    EOT
-  }
-}
+#   provisioner "local-exec" {
+#     command = <<EOT
+#       #!/bin/bash
+#       dest_instance_index=$(((${count.index} + 1) % ${var.num_vms}))
+#       dest_instance_ip=$("${aws_instance.my_vm[dest_instance_index].private_ip}")
+#       ping -c 1 $dest_instance_ip
+#     EOT
+#   }
+# }
 
 resource "aws_security_group" "allow_pings" {
   vpc_id = aws_vpc.main_vpc.id
