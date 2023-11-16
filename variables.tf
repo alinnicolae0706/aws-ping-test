@@ -13,3 +13,7 @@ variable "vm_image" {
 variable "cidr_block" {
   description = "The IP range for the VPC"
 }
+
+variable "subnet" {
+  description = "The subnet range for the VPC"
+}
