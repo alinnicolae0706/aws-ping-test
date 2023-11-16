@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "aws" {
-  region  = "eu-central-1"
+  region = "eu-central-1"
 }
 
 resource "aws_vpc" "main_vpc" {
@@ -19,16 +19,16 @@ resource "aws_vpc" "main_vpc" {
 }
 
 resource "aws_subnet" "my_subnet" {
-  count = var.num_vms
+  count      = var.num_vms
   cidr_block = "10.${var.subnet}.${count.index + 1}.0/24"
-  vpc_id = aws_vpc.main_vpc.id
+  vpc_id     = aws_vpc.main_vpc.id
   tags = {
     Name = "vm-subnet-${count.index}"
   }
 }
 
 resource "aws_instance" "my_vm" {
-  count = var.num_vms
+  count         = var.num_vms
   ami           = var.vm_image
   instance_type = var.vm_flavor
   subnet_id     = aws_subnet.my_subnet[count.index].id
@@ -54,16 +54,16 @@ resource "aws_security_group" "allow_pings" {
   vpc_id = aws_vpc.main_vpc.id
 
   ingress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "icmp"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "icmp"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
