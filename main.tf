@@ -43,9 +43,9 @@ resource "null_resource" "ping_tests" {
   provisioner "local-exec" {
     command = <<EOT
       #!/bin/bash
-      dest_instance_index=\$(((${count.index} + 1) % ${var.num_vms}))
-      dest_instance_ip=\$("${aws_instance.my_vm[dest_instance_index].private_ip}")
-      ping -c 1 \$dest_instance_ip
+      dest_instance_index=$(((${count.index} + 1) % ${var.num_vms}))
+      dest_instance_ip=$("${aws_instance.my_vm[dest_instance_index].private_ip}")
+      ping -c 1 $dest_instance_ip
     EOT
   }
 }
