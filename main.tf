@@ -31,7 +31,7 @@ resource "random_shuffle" "az_list" {
 }
 
 resource "aws_vpc" "vm_vpc" {
-  cidr_block = var.cidr_block
+  cidr_block = local.vpc_cidr
   tags = {
     Name = "vm-vpc"
   }
@@ -117,19 +117,25 @@ resource "aws_security_group" "ssh" {
   }
 }
 
-# resource "null_resource" "ping_round_robin" {
-#   count = var.num_vms
+resource "null_resource" "ping_round_robin" {
+  count = var.num_vms
 
-#   triggers = {
-#     vm_index = count.index
-#   }
+  triggers = {
+    vm_index = count.index
+  }
 
-#   provisioner "remote-exec" {
-#     command = << EOT
-#       source_vm=${count.index}
-#       target_vm=$((($source_vm + 1) % 3))
-#       ip_addr=$(terraform output -json test_vms_private_ips | jq -r ".[$target_vm]")
-#       ping -c 4 $ip_addr
-#     EOT
-#   }
-# }
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = aws_instance.test_vm[count.index].public_ip
+      private_key = file(var.private_key_path)
+    }
+    inline = [
+      "source_vm=${count.index}",
+      "target_vm=$((($source_vm + 1) % ${var.num_vms}))",
+      "ip_addr=$(terraform output -json test_vms_private_ips | jq -r \".[$target_vm]\")",
+      "ping -c 4 $ip_addr"
+    ]
+  }
+}

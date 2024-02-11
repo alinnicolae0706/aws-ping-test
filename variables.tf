@@ -11,10 +11,6 @@ variable "vm_flavor" {
   description = "Flavor of VM"
 }
 
-variable "cidr_block" {
-  description = "The VPC CIDR range"
-}
-
 variable "public_key_path" {
   type    = string
   default = "/home/alinic/.ssh/id_rsa.pub"
